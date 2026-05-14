@@ -176,14 +176,6 @@ $on_mod(Loaded) {
                         }
                     }
 
-                    niorin::cheats::global::validatefps();
-
-                    if (!niorin::cheats::global::lsKnownGood) {
-                        ImGui::TextColored(ImVec4(1.f, 0.2f, 0.2f, 1.f), "no");
-                    } else {
-                        ImGui::TextColored(ImVec4(0.2f, 1.f, 0.2f, 1.f), "yes");
-                    }
-
                     ImGui::SeparatorText("Input");
 
                     auto drawtoggle = [&](auto* c) {
