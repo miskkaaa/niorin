@@ -3,6 +3,10 @@
 using namespace geode::prelude;
 
 namespace niorin::global {
-    static auto vsync = GameManager::sharedState()->getGameVariable(GameVar::VerticalSync);
-    static auto crfps = GameManager::sharedState()->getGameVariable(GameVar::UnlockFPS);
+    inline auto* gm = GameManager::sharedState();
+
+    inline bool vsync = gm->getGameVariable(GameVar::VerticalSync);
+    inline bool unfps = gm->getGameVariable(GameVar::UnlockFPS);
+    inline bool cbs   = gm->getGameVariable(GameVar::ClickBetweenSteps);
+    inline bool cos   = gm->getGameVariable(GameVar::ClickOnSteps);
 }

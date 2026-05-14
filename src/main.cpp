@@ -127,22 +127,46 @@ $on_mod(Loaded) {
                 ImGui::SeparatorText("Cheats");
 
                 if (ImGui::CollapsingHeader("Global")) {
+                    auto& cheats = niorin::cheats::all::get();
+                    using cheat_t =
+                        std::remove_reference_t<decltype(niorin::cheats::all::get()[0])>;
+
+                    cheat_t* cos = nullptr;
+                    cheat_t* cbs = nullptr;
+
                     for (auto& c : niorin::cheats::all::get()) {
                         if (c.type != 2) continue;
+                        if (c.name == "Click on Steps") {
+                            cos = &c;
+                            continue;
+                        }
+
+                        if (c.name == "Click between Steps") {
+                            cbs = &c;
+                            continue;
+                        }
+
                         if (c.thingy == 1) {
-                                if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
+                            if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
                                 if (c.callback) {
                                     c.callback(c.enabled);
                                 }
                             }
-                        } else if (c.thingy == 4) {
-                            if (ImGui::InputFloat(c.name.c_str(), &c.value, 0.f, 0.f, "%.4f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+                        }
+                        else if (c.thingy == 4) {
+                            if (ImGui::InputFloat(
+                                c.name.c_str(),
+                                &c.value,
+                                0.f,
+                                0.f,
+                                "%.4f",
+                                ImGuiInputTextFlags_EnterReturnsTrue
+                            )) {
                                 if (c.float_cb) {
                                     c.float_cb(c.value);
                                 }
                             }
                         }
-
                         if (ImGui::IsItemHovered()) {
                             ImGui::BeginTooltip();
                             ImGui::Text("%s", c.desc.c_str());
@@ -151,6 +175,29 @@ $on_mod(Loaded) {
                             ImGui::EndTooltip();
                         }
                     }
+
+                    ImGui::SeparatorText("Input");
+
+                    auto drawtoggle = [&](auto* c) {
+                        if (!c) return;
+
+                        if (ImGui::Checkbox(c->name.c_str(), &c->enabled)) {
+                            if (c->callback) {
+                                c->callback(c->enabled);
+                            }
+                        }
+
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::BeginTooltip();
+                            ImGui::Text("%s", c->desc.c_str());
+                            ImGui::Separator();
+                            ImGui::Text("made by %s", c->author.c_str());
+                            ImGui::EndTooltip();
+                        }
+                    };
+
+                    drawtoggle(cbs);
+                    drawtoggle(cos);
                 }
                 ImGui::Separator();
                 if (ImGui::CollapsingHeader("Level")) {
