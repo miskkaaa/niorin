@@ -12,16 +12,17 @@ namespace niorin::cheats::global {
         AppDelegate::get()->toggleVerticalSync(value);
         niorin::global::vsync = value;
     }
-    bool _register() {
+    static bool _registervsync() {
         niorin::cheats::all::registerCheat({
             .name       = "VSync",
             .desc       = "enable or disable vsync",
             .author     = "miskaa",
-            .type       = 2,
+            .type       = 2, // global
+            .thingy     = 1, // textbox
             .callback   = vsynccb
         });
         return true;
-    } bool registered = _register();
+    } bool registeredvsync = _registervsync();
 }
 
 class $modify(GameManager) {

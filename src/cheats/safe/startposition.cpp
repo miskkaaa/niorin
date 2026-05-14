@@ -32,5 +32,5 @@ namespace niorin::cheats::safe {
         });
         return true;
     }
-    bool registered = _register();
+    [[maybe_unused]] bool registered = _register();
 }

@@ -13,8 +13,13 @@ namespace niorin::cheats::all {
         int type = 0;
         // Use 1 when its a Level cheat
         // Use 2 when its a Global cheat
-        std::function<void(bool)> callback;
+        int thingy = 0;
+        // use 1 when checkbox, use 2 when textbox, use 3 if float slider idk what else i honestly forgot oh and 4 if you want a float textbox
 
+        float value = 0.f;
+
+        std::function<void(bool)> callback;
+        std::function<void(float)> float_cb;
         int index = 0;
     };
     std::vector<cheat>& get();

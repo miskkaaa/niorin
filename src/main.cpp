@@ -56,7 +56,7 @@ $on_mod(Loaded) {
                 const auto text =
                     "Niorin - mod menu\n"
                     "Cool ass mod menu:tm: (not really tho)\n"
-                    "thank you prevter for letting me steal the source code of eclipses start position";
+                    "A lot of source code has been taken from Eclipse (github.com/EclipseMenu/EclipseMenu), fpsbypass and startposition go to them";
 
                 const float width  = ImGui::GetContentRegionAvail().x;
                 const float twidth = ImGui::CalcTextSize(text).x;
@@ -129,9 +129,17 @@ $on_mod(Loaded) {
                 if (ImGui::CollapsingHeader("Global")) {
                     for (auto& c : niorin::cheats::all::get()) {
                         if (c.type != 2) continue;
-                        if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
-                            if (c.callback) {
-                                c.callback(c.enabled);
+                        if (c.thingy == 1) {
+                                if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
+                                if (c.callback) {
+                                    c.callback(c.enabled);
+                                }
+                            }
+                        } else if (c.thingy == 4) {
+                            if (ImGui::InputFloat(c.name.c_str(), &c.value, 0.f, 0.f, "%.4f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+                                if (c.float_cb) {
+                                    c.float_cb(c.value);
+                                }
                             }
                         }
 
@@ -148,9 +156,17 @@ $on_mod(Loaded) {
                 if (ImGui::CollapsingHeader("Level")) {
                     for (auto& c : niorin::cheats::all::get()) {
                         if (c.type != 1) continue;
-                        if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
-                            if (c.callback) {
-                                c.callback(c.enabled);
+                        if (c.thingy == 1) {
+                            if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
+                                if (c.callback) {
+                                    c.callback(c.enabled);
+                                }
+                            }
+                        } else if (c.thingy == 4) {
+                            if (ImGui::InputFloat(c.name.c_str(), &c.value, 0.f, 0.f, "%.4f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+                                if (c.float_cb) {
+                                    c.float_cb(c.value);
+                                }
                             }
                         }
 
