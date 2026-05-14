@@ -1,33 +1,37 @@
 #pragma once
 
 #include "theme/default.hpp"
+#include "theme/classic.hpp"
 #include "color/colors.hpp"
 
 namespace niorin::theme {
     enum class theme {
-        Default
+        Default,
+        ImGuiClassic
     };
 
     enum class color_t {
         Default,
-        Red
+        Red,
+        Purple
     };
 
-    inline constexpr int tc = 1;
-    inline constexpr int cc = 2;
+    inline constexpr int tc = 2;
+    inline constexpr int cc = 3;
 
     inline const char* name(const theme t) {
         switch (t) {
             case theme::Default: return "Default";
+            case theme::ImGuiClassic: return "ImGuiClassic";
         }
         return "unknown";
     }
 
     inline const char* name(const color_t t) {
         switch (t) {
-            case color_t::Default: return "Default";
-            case color_t::Red:
-                return "Red";
+            case color_t::Default:  return "Default";
+            case color_t::Red:      return "Red";
+            case color_t::Purple:   return "Purple";
         }
         return "unknown";
     }
@@ -38,6 +42,8 @@ namespace niorin::theme {
                 return color::Default;
             case color_t::Red:
                 return color::Red;
+            case color_t::Purple:
+                return color::Purple;
         }
         return color::Default;
     }
@@ -46,6 +52,9 @@ namespace niorin::theme {
         switch (t) {
             case theme::Default:
                 _theme_default();
+                break;
+            case theme::ImGuiClassic:
+                _theme_classic();
                 break;
         }
     }

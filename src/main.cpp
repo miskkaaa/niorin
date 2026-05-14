@@ -2,14 +2,14 @@
 #include <imgui-cocos.hpp>
 
 #include "themes/listing.hpp"
-#include "cheats/headers/safe.hpp"
+#include "cheats/headers/global.hpp"
 
 using namespace geode::prelude;
 
 static ImFont* idk1 = nullptr;
 
 $on_mod(Loaded) {
-    niorin::list::safe::init();
+    niorin::cheats::all::init();
 
     static int ls = -1; // last style
     static int lc = -1; // last color
@@ -20,7 +20,7 @@ $on_mod(Loaded) {
 
             ImGui::StyleColorsClassic();
 
-            auto fontPath = (
+            const auto fontPath = (
                 Mod::get()->getResourcesDir() / "DroidSans.ttf"
             ).string();
 
@@ -35,7 +35,7 @@ $on_mod(Loaded) {
 
             io.FontDefault = idk1;
 
-            niorin::theme::apply(niorin::theme::theme::Default);
+            niorin::theme::apply(niorin::theme::theme::Default, niorin::theme::color_t::Default);
         })
 
         .draw([] {
@@ -51,18 +51,18 @@ $on_mod(Loaded) {
                 return;
             }
 
-            if (ImGui::Begin("Niorin ImGui demo", &open)) {
+            if (ImGui::Begin("Niorin", &open)) {
                 ImGui::SeparatorText("Imporant :3");
-                const char* text =
+                const auto text =
                     "Niorin - mod menu\n"
                     "Cool ass mod menu:tm: (not really tho)\n"
                     "thank you prevter for letting me steal the source code of eclipses start position";
 
-                float width  = ImGui::GetContentRegionAvail().x;
-                float twidth = ImGui::CalcTextSize(text).x;
-                float inden  = (width - twidth) * 0.5f;
-                if (inden > 0.0f)
+                const float width  = ImGui::GetContentRegionAvail().x;
+                const float twidth = ImGui::CalcTextSize(text).x;
+                if (const float inden  = (width - twidth) * 0.5f; inden > 0.0f)
                     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + inden);
+
                 ImGui::TextWrapped("%s",text);
 
                 ImGui::SeparatorText("Misc");
@@ -126,16 +126,9 @@ $on_mod(Loaded) {
 
                 ImGui::SeparatorText("Cheats");
 
-                if (ImGui::CollapsingHeader("Safe")) {
-                    if (ImGui::IsItemHovered()) {
-                        ImGui::BeginTooltip();
-                        ImGui::Text("Contains all of the safe mods/cheats that you can use mid gameplay");
-                        ImGui::Separator();
-                        ImGui::Text("Contains stuff as:\n   - Start Position Switcher");
-                        ImGui::EndTooltip();
-                    }
-
-                    for (auto& c : niorin::list::safe::get()) {
+                if (ImGui::CollapsingHeader("Global")) {
+                    for (auto& c : niorin::cheats::all::get()) {
+                        if (c.type != 2) continue;
                         if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
                             if (c.callback) {
                                 c.callback(c.enabled);
@@ -151,21 +144,32 @@ $on_mod(Loaded) {
                         }
                     }
                 }
-
                 ImGui::Separator();
+                if (ImGui::CollapsingHeader("Level")) {
+                    for (auto& c : niorin::cheats::all::get()) {
+                        if (c.type != 1) continue;
+                        if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
+                            if (c.callback) {
+                                c.callback(c.enabled);
+                            }
+                        }
 
-                auto& cheats = niorin::list::safe::get();
-                if (!cheats.empty() && cheats[0].index == 1) {
-                    if (cheats[0].enabled) {
-                        ImGui::Text("Switcher is enabled");
-                        ImGui::NewLine();
-
-                        if (niorin::list::safe::detect()) {
-                            ImGui::Text("you are in startpos");
-                        } else {
-                            ImGui::Text("you aren't in startpos");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::BeginTooltip();
+                            ImGui::Text("%s", c.desc.c_str());
+                            ImGui::Separator();
+                            ImGui::Text("made by %s", c.author.c_str());
+                            ImGui::EndTooltip();
                         }
                     }
+                }
+                //ImGui::Separator();
+                const auto& safe = niorin::cheats::all::get();
+                // bool debug = false; // replace later
+                if (!safe.empty() && safe[0].index == 1) {
+                    /*
+                     you can detect some shit thats all, not rlly needed
+                    */
                 }
 
                 ImGui::SetWindowFontScale(1.f);
@@ -177,18 +181,20 @@ $on_mod(Loaded) {
                 static int color = 0;
 
                 const char* styles[] = {
-                    "Default"
+                    "Default",
+                    "ImGuiClassic"
                 };
 
                 const char* colors[] = {
                     "Default",
-                    "Red"
+                    "Red",
+                    "Purple"
                 };
 
                 ImGui::Combo("Style Theme", &style, styles, niorin::theme::tc);
                 ImGui::Combo("Color Theme", &color, colors, niorin::theme::cc);
-                auto t = static_cast<niorin::theme::theme>(style);
-                auto c = static_cast<niorin::theme::color_t>(color);
+                const auto t = static_cast<niorin::theme::theme>(style);
+                const auto c = static_cast<niorin::theme::color_t>(color);
 
                 if (style != ls || color != lc) {
                     niorin::theme::apply(t, c);

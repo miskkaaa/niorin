@@ -1,12 +1,11 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
-#include "../headers/safe.hpp"
+#include "../headers/global.hpp"
 
 using namespace geode::prelude;
 
-namespace niorin::list::safe {
+namespace niorin::cheats::safe {
     static bool enabled = true;
-    static bool onstart = false;
 
     void startpos(const bool state) {
         enabled = state;
@@ -17,18 +16,19 @@ namespace niorin::list::safe {
     }
 
     bool detect() {
-        auto* playLayer = PlayLayer::get();
+        const auto* playLayer = PlayLayer::get();
         if (!playLayer) return false;
         return playLayer->m_isTestMode;
     }
 
     bool _register() {
-        registerCheat({
+        all::registerCheat({
             .name="Start Position Switcher",
             .desc="start positions (replace later",
             .author="miskaa",
+            .type=1,
             .callback=startpos,
-            .index=1,
+            .index=2,
         });
         return true;
     }

@@ -8,14 +8,13 @@
 #include "../color/colors.hpp"
 
 namespace niorin::theme {
-
-    static inline void _theme_default() {
+    static void _theme_default() {
         ImGui::StyleColorsClassic();
 
         auto& style = ImGui::GetStyle();
 
         // main
-        style.WindowPadding         = ImVec2(20.f, 20.f);
+        style.WindowPadding         = ImVec2(20.f, 7.f);
         style.FramePadding          = ImVec2(4.f, 4.f);
         style.ItemSpacing           = ImVec2(8.f, 3.f);
         style.ItemInnerSpacing      = ImVec2(20.f, 4.f);
