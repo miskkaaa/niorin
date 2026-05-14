@@ -12,14 +12,13 @@ constexpr float MIN_FPS = 1.f;
 constexpr float MAX_FPS = 96767.f;
 
 namespace niorin::cheats::global {
-    static float nowfps() { // doesn't really work well
-        auto* gm = GameManager::sharedState();
-        if (!gm) return 60.f;
-        return gm->m_customFPSTarget;
-    }
-    static float fps = nowfps();
 
+    static float fps = 60.f;
     static bool enabled = false;
+
+    static bool appliedEnabled = false;
+    static float appliedFps = 60.f;
+    static bool lsKnownGood = true;
 
     static void applyfps() {
         auto* gm = GameManager::sharedState();
@@ -32,23 +31,29 @@ namespace niorin::cheats::global {
 
         float interval = 1.f / (enabled ? capped : 60.f);
         CCDirector::sharedDirector()->setAnimationInterval(interval);
+
+        appliedEnabled = gm->getGameVariable(GameVar::UnlockFPS);
+        appliedFps = gm->m_customFPSTarget;
+
+        lsKnownGood =
+            appliedEnabled == enabled &&
+            std::abs(appliedFps - capped) < 0.01f;
     }
 
     static void fpscb(float v) {
         fps = std::clamp(v, MIN_FPS, MAX_FPS);
 
-        if (enabled) {
-            auto* gm = GameManager::sharedState();
+        auto* gm = GameManager::sharedState();
+        if (!gm) return;
 
-            if (gm->getGameVariable(GameVar::VerticalSync)) {
-                gm->setGameVariable(GameVar::VerticalSync, false);
-                AppDelegate::get()->toggleVerticalSync(false);
+        if (enabled && gm->getGameVariable(GameVar::VerticalSync)) {
+            gm->setGameVariable(GameVar::VerticalSync, false);
+            AppDelegate::get()->toggleVerticalSync(false);
 
-                niorin::global::vsync = false;
+            niorin::global::vsync = false;
 
-                auto* c = niorin::cheats::all::find("VSync");
-                if (c) c->enabled = false;
-            }
+            auto* c = niorin::cheats::all::find("VSync");
+            if (c) c->enabled = false;
         }
 
         applyfps();
@@ -57,17 +62,32 @@ namespace niorin::cheats::global {
     static void togglecb(bool state) {
         enabled = state;
         auto* gm = GameManager::sharedState();
+        if (!gm) return;
 
-        if (enabled) {
-            if (gm->getGameVariable(GameVar::VerticalSync)) {
-                gm->setGameVariable(GameVar::VerticalSync, false);
-                AppDelegate::get()->toggleVerticalSync(false);
-                niorin::global::vsync = false;
-                auto* c = niorin::cheats::all::find("VSync");
-                if (c) c->enabled = false;
-            }
+        if (enabled && gm->getGameVariable(GameVar::VerticalSync)) {
+            gm->setGameVariable(GameVar::VerticalSync, false);
+            AppDelegate::get()->toggleVerticalSync(false);
+
+            niorin::global::vsync = false;
+
+            auto* c = niorin::cheats::all::find("VSync");
+            if (c) c->enabled = false;
         }
         applyfps();
+    }
+
+    static void validatefps() {
+        auto* gm = GameManager::sharedState();
+        if (!gm) return;
+
+        float capped = std::clamp(fps, MIN_FPS, MAX_FPS);
+
+        if (gm->m_customFPSTarget != capped ||
+            gm->getGameVariable(GameVar::UnlockFPS) != enabled) {
+            lsKnownGood = false;
+        } else {
+            lsKnownGood = true;
+        }
     }
 
     bool _registerfps() {

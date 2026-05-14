@@ -29,3 +29,9 @@ namespace niorin::cheats::all {
 
     void registerCheat(const cheat& c);
 }
+namespace niorin::cheats::global {
+    void validatefps();
+
+    extern bool lsKnownGood;
+    extern bool enabled;
+}
