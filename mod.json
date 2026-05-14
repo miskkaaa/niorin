@@ -8,7 +8,7 @@
 	},
 	"id": "miskaa.niorin",
 	"name": "niorin",
-	"version": "v1.0.0",
+	"version": "v0.0.1-alpha.1",
 	"developer": "miskaa",
 	"description": "simple ImGUI mod menu | the name is kind of an anagram of heroin",
 	"dependencies": {
