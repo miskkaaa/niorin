@@ -178,7 +178,8 @@ $on_mod(Loaded) {
                 };
 
                 const char* colors[] = {
-                    "Default"
+                    "Default",
+                    "Red"
                 };
 
                 ImGui::Combo("Style Theme", &style, styles, niorin::theme::tc);
@@ -190,5 +191,6 @@ $on_mod(Loaded) {
                 );
             }
             ImGui::End();
+            ImGui::ShowDemoWindow();
         });
 }

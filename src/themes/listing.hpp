@@ -9,11 +9,12 @@ namespace niorin::theme {
     };
 
     enum class color_t {
-        Default
+        Default,
+        Red
     };
 
     inline constexpr int tc = 1;
-    inline constexpr int cc = 1;
+    inline constexpr int cc = 2;
 
     inline const char* name(const theme t) {
         switch (t) {
@@ -25,6 +26,8 @@ namespace niorin::theme {
     inline const char* name(const color_t t) {
         switch (t) {
             case color_t::Default: return "Default";
+            case color_t::Red:
+                return "Red";
         }
         return "unknown";
     }
@@ -33,6 +36,8 @@ namespace niorin::theme {
         switch (t) {
             case color_t::Default:
                 return color::Default;
+            case color_t::Red:
+                return color::Red;
         }
         return color::Default;
     }
@@ -51,9 +56,8 @@ namespace niorin::theme {
         const auto& c = get(ct);
         auto& style = ImGui::GetStyle();
 
-        style.Colors[ImGuiCol_TitleBg]          = c.TitleBg;
-        style.Colors[ImGuiCol_TitleBgActive]    = c.TitleBgActive;
-        style.Colors[ImGuiCol_TitleBgCollapsed] = c.TitleBgCollapsed;
-        style.Colors[ImGuiCol_WindowBg]         = c.WindowBg;
+        for (const auto& [idk1, idk2] : c.colors) {
+            style.Colors[idk1] = idk2;
+        }
     }
 }

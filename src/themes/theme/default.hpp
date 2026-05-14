@@ -60,10 +60,9 @@ namespace niorin::theme {
 
         const auto& col = color::Default;
 
-        style.Colors[ImGuiCol_TitleBg]          = col.TitleBg;
-        style.Colors[ImGuiCol_TitleBgActive]    = col.TitleBgActive;
-        style.Colors[ImGuiCol_TitleBgCollapsed] = col.TitleBgCollapsed;
-        style.Colors[ImGuiCol_WindowBg]         = col.WindowBg;
+        for (const auto& [idk1, idk2] : col.colors) {
+            style.Colors[idk1] = idk2;
+        }
 
         // widgets
         style.SeparatorTextAlign   = ImVec2(0.5f, 0.5f);
