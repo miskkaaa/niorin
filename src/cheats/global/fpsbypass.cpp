@@ -12,8 +12,13 @@ constexpr float MIN_FPS = 1.f;
 constexpr float MAX_FPS = 96767.f;
 
 namespace niorin::cheats::global {
+    static float nowfps() { // doesn't really work well
+        auto* gm = GameManager::sharedState();
+        if (!gm) return 60.f;
+        return gm->m_customFPSTarget;
+    }
+    static float fps = nowfps();
 
-    static float fps = 60.f;
     static bool enabled = false;
 
     static void applyfps() {

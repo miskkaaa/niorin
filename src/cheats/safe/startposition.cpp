@@ -21,16 +21,17 @@ namespace niorin::cheats::safe {
         return playLayer->m_isTestMode;
     }
 
-    bool _register() {
+    bool _registersp() {
         all::registerCheat({
             .name="Start Position Switcher",
             .desc="start positions (replace later",
             .author="miskaa",
             .type=1,
+            .thingy=1,
             .callback=startpos,
             .index=2,
         });
         return true;
     }
-    [[maybe_unused]] bool registered = _register();
+    bool registeredsp = _registersp();
 }
