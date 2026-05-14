@@ -11,6 +11,9 @@ static ImFont* idk1 = nullptr;
 $on_mod(Loaded) {
     niorin::list::safe::init();
 
+    static int ls = -1; // last style
+    static int lc = -1; // last color
+
     ImGuiCocos::get()
         .setup([] {
             auto& io = ImGui::GetIO();
@@ -184,11 +187,15 @@ $on_mod(Loaded) {
 
                 ImGui::Combo("Style Theme", &style, styles, niorin::theme::tc);
                 ImGui::Combo("Color Theme", &color, colors, niorin::theme::cc);
+                auto t = static_cast<niorin::theme::theme>(style);
+                auto c = static_cast<niorin::theme::color_t>(color);
 
-                niorin::theme::apply(
-                    static_cast<niorin::theme::theme>(style),
-                    static_cast<niorin::theme::color_t>(color)
-                );
+                if (style != ls || color != lc) {
+                    niorin::theme::apply(t, c);
+
+                    ls = style;
+                    lc = color;
+                }
             }
             ImGui::End();
             ImGui::ShowDemoWindow();
