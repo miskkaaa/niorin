@@ -16,10 +16,15 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES}
         src/themes/listing.hpp
         src/themes/theme/default.hpp
         src/themes/helper.hpp
-        src/cheats/safe/startposition.cpp
-        src/cheats/headers/safe.hpp
-        src/cheats/headers/safe.cpp
+        src/cheats/level/startposition.cpp
+        src/cheats/headers/global.hpp
+        src/cheats/headers/global.cpp
         src/themes/color/colors.hpp
+        src/themes/theme/classic.hpp
+        src/cheats/global/vsync.cpp
+        src/magic/global.hpp
+        src/cheats/global/fpsbypass.cpp
+        src/cheats/global/cbs.cpp
 )
 
 if (NOT DEFINED ENV{GEODE_SDK})
