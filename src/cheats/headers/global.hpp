@@ -29,3 +29,13 @@ namespace niorin::cheats::all {
 
     void registerCheat(const cheat& c);
 }
+
+namespace niorin::cheats::safe {
+    extern bool enabled;
+    extern std::vector<StartPosObject*> spos;
+    extern int current;
+    void next();
+    void prev();
+    void startpos(bool state);
+    bool detect();
+}

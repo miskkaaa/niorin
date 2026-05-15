@@ -51,6 +51,12 @@ $on_mod(Loaded) {
                 return;
             }
 
+            if (ImGui::IsKeyPressed(ImGuiKey_Q)) {
+                niorin::cheats::safe::prev();
+            }
+            if (ImGui::IsKeyPressed(ImGuiKey_E)) {
+                niorin::cheats::safe::next();
+            }
             if (ImGui::Begin("Niorin", &open)) {
                 ImGui::SeparatorText("Imporant :3");
                 const auto text =
