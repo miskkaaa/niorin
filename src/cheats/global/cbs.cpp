@@ -19,7 +19,7 @@ namespace niorin::cheats::global {
     }
 
     static bool _registercbs() {
-        niorin::cheats::all::registerCheat({
+        all::registerCheat({
             .name       = "Click between Steps",
             .desc       = "enable or disable CbS",
             .author     = "miskaa",

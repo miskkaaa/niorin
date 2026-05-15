@@ -75,7 +75,7 @@ namespace niorin::cheats::global {
         }
         applyfps();
     }
-
+    
     static void validatefps() {
         auto* gm = GameManager::sharedState();
         if (!gm) return;
@@ -91,7 +91,7 @@ namespace niorin::cheats::global {
     }
 
     bool _registerfps() {
-        niorin::cheats::all::registerCheat({
+        all::registerCheat({
             .name = "FPS Bypass",
             .desc = "game go vroom",
             .author = "miskaa",

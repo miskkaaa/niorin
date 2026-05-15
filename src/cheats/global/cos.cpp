@@ -19,7 +19,7 @@ namespace niorin::cheats::global {
     }
 
     static bool _registercos() {
-        niorin::cheats::all::registerCheat({
+        all::registerCheat({
             .name       = "Click on Steps",
             .desc       = "enable or disable CoS",
             .author     = "miskaa",
