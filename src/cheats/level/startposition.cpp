@@ -1,27 +1,52 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
+
 #include "../headers/global.hpp"
 
 using namespace geode::prelude;
 
 namespace niorin::cheats::safe {
-    bool enabled = false;
+    inline bool enabled = false;
+    inline std::vector<StartPosObject*> spos;
+    inline int current = -1;
 
-    std::vector<StartPosObject*> spos;
+    PlayLayer* getpl() {
+        return PlayLayer::get();
+    }
 
-    int current = -1;
+    int count() {
+        return static_cast<int>(spos.size());
+    }
 
-    void pick(PlayLayer* pl, int index) {
-        if (!pl) return;
-        if (spos.empty()) return;
+    void reset(PlayLayer* pl, StartPosObject* obj) {
+        pl->m_currentCheckpoint = nullptr;
 
-        int count =
-            static_cast<int>(spos.size());
+        pl->setStartPosObject(obj);
 
-        if (index >= count)
+        pl->m_isTestMode = obj != nullptr;
+
+        if (pl->m_isPracticeMode)
+            pl->resetLevelFromStart();
+        else
+            pl->resetLevel();
+
+        pl->startMusic();
+        pl->updateTestModeLabel();
+    }
+
+    void pick(int index) {
+        auto* pl = getpl();
+
+        if (!pl || spos.empty() || !enabled)
+            return;
+
+        int max = count();
+
+        if (index >= max)
             index = -1;
-        else if (index < -1)
-            index = count - 1;
+
+        if (index < -1)
+            index = max - 1;
 
         current = index;
 
@@ -30,48 +55,23 @@ namespace niorin::cheats::safe {
             ? spos[current]
             : nullptr;
 
-        pl->m_currentCheckpoint = nullptr;
-
-        pl->setStartPosObject(obj);
-
-        pl->m_isTestMode =
-            obj != nullptr;
-
-        if (pl->m_isPracticeMode)
-            pl->resetLevelFromStart();
-        else
-            pl->resetLevel();
-
-        pl->startMusic();
-
-        pl->updateTestModeLabel();
+        reset(pl, obj);
 
         log::info(
-            "startpos switched {}",
+            "switched startpos: {}",
             current
         );
     }
 
     void next() {
-        auto* pl = PlayLayer::get();
-
-        if (!pl) return;
-        if (!enabled) return;
-
-        pick(pl, current + 1);
+        pick(current + 1);
     }
 
     void prev() {
-        auto* pl = PlayLayer::get();
-
-        if (!pl) return;
-        if (!enabled) return;
-
-        pick(pl, current - 1);
+        pick(current - 1);
     }
 
-    void startpos(const bool state) {
-
+    void startpos(bool state) {
         enabled = state;
 
         log::info(
@@ -83,17 +83,12 @@ namespace niorin::cheats::safe {
     }
 
     bool detect() {
+        auto* pl = getpl();
 
-        auto* pl = PlayLayer::get();
-
-        if (!pl)
-            return false;
-
-        return pl->m_isTestMode;
+        return pl && pl->m_isTestMode;
     }
 
-    bool _registersp() {
-
+    bool reg() {
         all::registerCheat({
             .name = "Start Position Switcher",
             .desc = "switch between start positions",
@@ -108,16 +103,13 @@ namespace niorin::cheats::safe {
         return true;
     }
 
-    bool registeredsp = _registersp();
+    inline bool registered = reg();
 }
 
 class StartPosSwitcherNode : public CCMenu {
 public:
-
     static StartPosSwitcherNode* create() {
-
-        auto* ret =
-            new StartPosSwitcherNode();
+        auto* ret = new StartPosSwitcherNode();
 
         if (ret && ret->init()) {
             ret->autorelease();
@@ -125,26 +117,23 @@ public:
         }
 
         delete ret;
-
         return nullptr;
     }
 
     bool init() override {
-
         if (!CCMenu::init())
             return false;
 
         ignoreAnchorPointForPosition(false);
 
-        setAnchorPoint({ 0.1f, 0.5f });
-
         auto size =
-            CCDirector::sharedDirector()
-            ->getWinSize();
+            CCDirector::sharedDirector()->getWinSize();
+
+        setAnchorPoint({ 1.f, 0.5f });
 
         setPosition(
-            size.width,
-            size.height
+            size.width - 25.f,
+            size.height / 2.f
         );
 
         auto* upSpr =
@@ -160,8 +149,8 @@ public:
         if (!upSpr || !downSpr)
             return false;
 
-        downSpr->setRotation(-90.f);
         upSpr->setRotation(90.f);
+        downSpr->setRotation(-90.f);
 
         upSpr->setScale(0.7f);
         downSpr->setScale(0.7f);
@@ -170,18 +159,14 @@ public:
             CCMenuItemSpriteExtra::create(
                 upSpr,
                 this,
-                menu_selector(
-                    StartPosSwitcherNode::onNext
-                )
+                menu_selector(StartPosSwitcherNode::onNext)
             );
 
         auto* down =
             CCMenuItemSpriteExtra::create(
                 downSpr,
                 this,
-                menu_selector(
-                    StartPosSwitcherNode::onPrev
-                )
+                menu_selector(StartPosSwitcherNode::onPrev)
             );
 
         m_current =
@@ -192,7 +177,7 @@ public:
 
         auto* slash =
             CCLabelBMFont::create(
-                " / ",
+                "/",
                 "bigFont.fnt"
             );
 
@@ -202,41 +187,59 @@ public:
                 "bigFont.fnt"
             );
 
-        if (
-            !m_current ||
-            !slash ||
-            !m_max
-        ) {
+        if (!m_current || !slash || !m_max)
             return false;
-        }
 
         up->setPosition(0.f, 24.f);
-
-        m_current->setPosition(-20.f, 0.f);
-
-        slash->setPosition(0.f, 0.f);
-
-        m_max->setPosition(20.f, 0.f);
-
         down->setPosition(0.f, -24.f);
 
+        m_current->setPosition(-18.f, 0.f);
+        slash->setPosition(0.f, 0.f);
+        m_max->setPosition(18.f, 0.f);
+
         m_current->setScale(0.55f);
-
         slash->setScale(0.5f);
-
         m_max->setScale(0.55f);
 
         addChild(up);
-
-        addChild(m_current);
-
-        addChild(slash);
-
-        addChild(m_max);
-
         addChild(down);
 
+        addChild(m_current);
+        addChild(slash);
+        addChild(m_max);
+
         scheduleUpdate();
+
+        addEventListener(
+            geode::KeyboardInputEvent(),
+            [this](geode::KeyboardInputData data) {
+                using Action =
+                    geode::KeyboardInputData::Action;
+
+                if (
+                    data.action != Action::Press ||
+                    !niorin::cheats::safe::enabled
+                ) {
+                    return ListenerResult::Propagate;
+                }
+
+                // replace keybindings with them custom keybindings
+                switch (data.key) {
+                    case KEY_Q:
+                        niorin::cheats::safe::prev();
+                        break;
+
+                    case KEY_E:
+                        niorin::cheats::safe::next();
+                        break;
+
+                    default:
+                        break;
+                }
+
+                return ListenerResult::Propagate;
+            }
+        );
 
         return true;
     }
@@ -250,92 +253,69 @@ public:
     }
 
     void update(float) override {
+        using namespace niorin::cheats::safe;
 
-        setVisible(
-            niorin::cheats::safe::enabled
-        );
+        setVisible(enabled);
 
-        int current =
-            niorin::cheats::safe::current + 1;
-
-        int max =
-            static_cast<int>(
-                niorin::cheats::safe::spos.size()
-            );
+        int now = current + 1;
+        int max = count();
 
         m_current->setCString(
             fmt::format(
                 "{}",
-                current <= 0
+                now <= 0
                 ? 0
-                : current
+                : now
             ).c_str()
         );
 
         m_max->setCString(
-            fmt::format(
-                "{}",
-                max
-            ).c_str()
+            fmt::format("{}", max).c_str()
         );
     }
 
 private:
-
     CCLabelBMFont* m_current = nullptr;
-
     CCLabelBMFont* m_max = nullptr;
 };
 
 class $modify(niorinsp, PlayLayer) {
-
     bool init(
         GJGameLevel* level,
         bool useReplay,
         bool dontCreateObjects
     ) {
-
-        niorin::cheats::safe::spos.clear();
-
-        niorin::cheats::safe::current = -1;
-
-        bool result =
-            PlayLayer::init(
+        if (
+            !PlayLayer::init(
                 level,
                 useReplay,
                 dontCreateObjects
-            );
+            )
+        ) {
+            return false;
+        }
 
-        auto* node =
-            StartPosSwitcherNode::create();
+        using namespace niorin::cheats::safe;
 
-        if (node) {
+        spos.clear();
+        current = -1;
 
-            this->addChild(
-                node,
-                999999
-            );
+        if (auto* node = StartPosSwitcherNode::create()) {
+            addChild(node);
 
-            log::info(
-                "startpos ui added"
-            );
+            log::info("startpos ui added");
         }
         else {
-
-            log::error(
-                "failed creating startpos ui"
-            );
+            log::error("failed creating startpos ui");
         }
 
-        return result;
+        return true;
     }
 
     void addObject(GameObject* obj) {
-
         PlayLayer::addObject(obj);
 
         if (obj->m_objectID == 31) {
-
             niorin::cheats::safe::spos.push_back(
                 static_cast<StartPosObject*>(obj)
             );
@@ -343,42 +323,38 @@ class $modify(niorinsp, PlayLayer) {
     }
 
     void createObjectsFromSetupFinished() {
-
         PlayLayer::createObjectsFromSetupFinished();
 
-        auto& v =
-            niorin::cheats::safe::spos;
+        using namespace niorin::cheats::safe;
 
         std::sort(
-            v.begin(),
-            v.end(),
+            spos.begin(),
+            spos.end(),
             [](auto* a, auto* b) {
-
                 return
                     a->getPositionX()
                     < b->getPositionX();
             }
         );
 
-        if (m_startPosObject) {
+        if (!m_startPosObject)
+            return;
 
-            auto it =
-                std::find(
-                    v.begin(),
-                    v.end(),
-                    m_startPosObject
+        auto it =
+            std::find(
+                spos.begin(),
+                spos.end(),
+                m_startPosObject
+            );
+
+        if (it != spos.end()) {
+            current =
+                static_cast<int>(
+                    std::distance(
+                        spos.begin(),
+                        it
+                    )
                 );
-
-            if (it != v.end()) {
-
-                niorin::cheats::safe::current =
-                    static_cast<int>(
-                        std::distance(
-                            v.begin(),
-                            it
-                        )
-                    );
-            }
         }
     }
 };
