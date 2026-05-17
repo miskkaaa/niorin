@@ -6,7 +6,8 @@
 
 using namespace geode::prelude;
 
-static ImFont* idk1 = nullptr;
+static ImFont* droidf = nullptr;
+static ImFont* notof = nullptr;
 
 $on_mod(Loaded) {
     niorin::cheats::all::init();
@@ -20,22 +21,34 @@ $on_mod(Loaded) {
 
             ImGui::StyleColorsClassic();
 
-            const auto fontPath = (
+            const auto droid = (
                 Mod::get()->getResourcesDir() / "DroidSans.ttf"
+            ).string(); const auto noto = (
+                Mod::get()->getResourcesDir() / "NotoSans.ttf"
             ).string();
 
             io.Fonts->AddFontDefault();
 
-            idk1 = io.Fonts->AddFontFromFileTTF(
-                fontPath.c_str(),
+            droidf = io.Fonts->AddFontFromFileTTF(
+                droid.c_str(),
                 12.f,
                 nullptr,
                 io.Fonts->GetGlyphRangesJapanese()
+            ); notof = io.Fonts->AddFontFromFileTTF(
+                noto.c_str(),
+                12.f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault()
             );
 
-            io.FontDefault = idk1;
+            io.FontDefault = droidf;
 
-            niorin::theme::apply(niorin::theme::theme::Default, niorin::theme::color_t::Default);
+            niorin::theme::apply(
+                niorin::theme::theme::
+                    GEODE_DESKTOP(Default)
+                    GEODE_MOBILE(Mobile),
+                niorin::theme::color_t::Default
+            );
         })
 
         .draw([] {
@@ -51,12 +64,14 @@ $on_mod(Loaded) {
                 return;
             }
 
+            // replace later with keyboard shit
             if (ImGui::IsKeyPressed(ImGuiKey_Q)) {
-                niorin::cheats::safe::prev();
+                niorin::cheats::safe::sp::prev();
             }
             if (ImGui::IsKeyPressed(ImGuiKey_E)) {
-                niorin::cheats::safe::next();
+                niorin::cheats::safe::sp::next();
             }
+            // ^^ temporary ^^^
             if (ImGui::Begin("Niorin", &open)) {
                 ImGui::SeparatorText("Imporant :3");
                 const auto text =
@@ -76,34 +91,6 @@ $on_mod(Loaded) {
                 if (ImGui::CollapsingHeader("Misc")) {
                     ImGui::Separator();
 
-                    ImGui::DragFloat(
-                        "Size",
-                        &size,
-                        0.25f,
-                        5.f,
-                        100.f
-                    );
-
-                    const char* items[] = {
-                        "Normal"
-                    };
-
-                    ImGui::Combo(
-                        "Font",
-                        &selected,
-                        items,
-                        IM_ARRAYSIZE(items)
-                    );
-
-                    ImFont* activeFont = nullptr;
-                    if (selected == 0) activeFont = idk1;
-
-                    if (activeFont) {
-                        ImGui::PushFont(activeFont);
-                    }
-
-                    ImGui::SetWindowFontScale(size / 18.f);
-
                     ImGui::Spacing();
                     ImGui::Separator();
                     ImGui::Spacing();
@@ -122,18 +109,12 @@ $on_mod(Loaded) {
                     if (ImGui::Button("Show demo")) {
                         log::info("button pressed");
                     }
-
-                    ImGui::SetWindowFontScale(1.f);
-
-                    if (activeFont) {
-                        ImGui::PopFont();
-                    }
                 }
 
                 ImGui::SeparatorText("Cheats");
 
                 if (ImGui::CollapsingHeader("Global")) {
-                    auto& cheats = niorin::cheats::all::get();
+                    //auto& cheats = niorin::cheats::all::get();
                     using cheat_t =
                         std::remove_reference_t<decltype(niorin::cheats::all::get()[0])>;
 
@@ -232,16 +213,6 @@ $on_mod(Loaded) {
                         }
                     }
                 }
-                //ImGui::Separator();
-                const auto& safe = niorin::cheats::all::get();
-                // bool debug = false; // replace later
-                if (!safe.empty() && safe[0].index == 1) {
-                    /*
-                     you can detect some shit thats all, not rlly needed
-                    */
-                }
-
-                ImGui::SetWindowFontScale(1.f);
             }
 
             ImGui::SeparatorText("Theme");
@@ -251,6 +222,7 @@ $on_mod(Loaded) {
 
                 const char* styles[] = {
                     "Default",
+                    "Mobile",
                     "ImGuiClassic"
                 };
 
@@ -271,6 +243,35 @@ $on_mod(Loaded) {
                     ls = style;
                     lc = color;
                 }
+
+                ImGui::SeparatorText("Font Configuration");
+
+                ImGui::DragFloat(
+                    "Global Font Size",
+                    &size,
+                    0.25f,
+                    5.f,
+                    100.f
+                );
+
+                const char* font_items[] = {
+                    "Droid Sans",
+                    "Noto Sans"
+                };
+
+                ImGui::Combo(
+                    "Font Family",
+                    &selected,
+                    font_items,
+                    IM_ARRAYSIZE(font_items)
+                );
+                
+                auto& io = ImGui::GetIO();
+
+                if (selected == 0 && droidf) io.FontDefault = droidf;
+                if (selected == 1 && notof)  io.FontDefault = notof;
+
+                io.FontGlobalScale = size / 18.f;
             }
             ImGui::End();
             ImGui::ShowDemoWindow();

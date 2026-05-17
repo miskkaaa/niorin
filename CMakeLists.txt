@@ -25,6 +25,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES}
         src/magic/global.hpp
         src/cheats/global/fpsbypass.cpp
         src/cheats/global/cbs.cpp
+        src/themes/theme/mobile.hpp
 )
 
 if (NOT DEFINED ENV{GEODE_SDK})
@@ -43,7 +44,9 @@ CPMAddPackage("gh:matcool/gd-imgui-cocos#b93f08ccef778a53ebba09b20c347f6a6398011
 
 target_link_libraries(${PROJECT_NAME} imgui-cocos)
 
-set(FONT_TTF_PATH ${imgui_SOURCE_DIR}resources/DroidSans.ttf)
+set(FONT_TTF_PATH ${imgui_SOURCE_DIR}resources/fonts/DroidSans.ttf)
+FileEmbedAdd("${FONT_TTF_PATH}")
+set(FONT_TTF_PATH ${imgui_SOURCE_DIR}resources/fonts/NotoSans.ttf)
 FileEmbedAdd("${FONT_TTF_PATH}")
 
 target_link_libraries(${PROJECT_NAME} embedded_files)

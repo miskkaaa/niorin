@@ -4,7 +4,7 @@
 
 using namespace geode::prelude;
 
-namespace niorin::cheats::safe {
+namespace niorin::cheats::safe::sp {
     bool enabled = false;
     std::vector<StartPosObject*> spos;
     int current = -1;
@@ -134,14 +134,14 @@ public:
         return true;
     }
 
-    void onNext(CCObject*) { niorin::cheats::safe::next(); }
-    void onPrev(CCObject*) { niorin::cheats::safe::prev(); }
+    void onNext(CCObject*) { niorin::cheats::safe::sp::next(); }
+    void onPrev(CCObject*) { niorin::cheats::safe::sp::prev(); }
 
     void update(float) override {
-        setVisible(niorin::cheats::safe::enabled);
+        setVisible(niorin::cheats::safe::sp::enabled);
 
-        int current = niorin::cheats::safe::current + 1;
-        int max = static_cast<int>(niorin::cheats::safe::spos.size());
+        int current = niorin::cheats::safe::sp::current + 1;
+        int max = static_cast<int>(niorin::cheats::safe::sp::spos.size());
 
         m_current->setCString(fmt::format("{}", current <= 0 ? 0 : current).c_str());
         m_max->setCString(fmt::format("{}", max).c_str());
@@ -154,8 +154,8 @@ private:
 
 class $modify(niorinsp, PlayLayer) {
     bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
-        niorin::cheats::safe::spos.clear();
-        niorin::cheats::safe::current = -1;
+        niorin::cheats::safe::sp::spos.clear();
+        niorin::cheats::safe::sp::current = -1;
 
         if (!PlayLayer::init(level, useReplay, dontCreateObjects)) {
             return false;
@@ -175,14 +175,14 @@ class $modify(niorinsp, PlayLayer) {
         PlayLayer::addObject(obj);
 
         if (obj->m_objectID == 31) {
-            niorin::cheats::safe::spos.push_back(static_cast<StartPosObject*>(obj));
+            niorin::cheats::safe::sp::spos.push_back(static_cast<StartPosObject*>(obj));
         }
     }
 
     void createObjectsFromSetupFinished() {
         PlayLayer::createObjectsFromSetupFinished();
 
-        auto& v = niorin::cheats::safe::spos;
+        auto& v = niorin::cheats::safe::sp::spos;
         std::sort(v.begin(), v.end(), [](auto* a, auto* b) {
             return a->getPositionX() < b->getPositionX();
         });
@@ -190,7 +190,7 @@ class $modify(niorinsp, PlayLayer) {
         if (m_startPosObject) {
             auto it = std::find(v.begin(), v.end(), m_startPosObject);
             if (it != v.end()) {
-                niorin::cheats::safe::current = static_cast<int>(std::distance(v.begin(), it));
+                niorin::cheats::safe::sp::current = static_cast<int>(std::distance(v.begin(), it));
             }
         }
     }

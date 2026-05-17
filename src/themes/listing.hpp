@@ -2,11 +2,13 @@
 
 #include "theme/default.hpp"
 #include "theme/classic.hpp"
+#include "theme/mobile.hpp"
 #include "color/colors.hpp"
 
 namespace niorin::theme {
     enum class theme {
         Default,
+        Mobile,
         ImGuiClassic
     };
 
@@ -16,12 +18,13 @@ namespace niorin::theme {
         Purple
     };
 
-    inline constexpr int tc = 2;
+    inline constexpr int tc = 3;
     inline constexpr int cc = 3;
 
     inline const char* name(const theme t) {
         switch (t) {
             case theme::Default: return "Default";
+            case theme::Mobile: return "Mobile";
             case theme::ImGuiClassic: return "ImGuiClassic";
         }
         return "unknown";
@@ -55,6 +58,9 @@ namespace niorin::theme {
                 break;
             case theme::ImGuiClassic:
                 _theme_classic();
+                break;
+            case theme::Mobile:
+                _theme_mobile();
                 break;
         }
     }

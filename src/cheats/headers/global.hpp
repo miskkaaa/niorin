@@ -30,7 +30,7 @@ namespace niorin::cheats::all {
     void registerCheat(const cheat& c);
 }
 
-namespace niorin::cheats::safe {
+namespace niorin::cheats::safe::sp {
     extern bool enabled;
     extern std::vector<StartPosObject*> spos;
     extern int current;

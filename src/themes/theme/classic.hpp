@@ -4,11 +4,6 @@
 #include "../helper.hpp"
 
 namespace niorin::theme {
-
-    static void dump() {
-        ImGuiStyle& style = ImGui::GetStyle();
-    }
-
     static void _theme_classic() {
         ImGui::StyleColorsDark();
         ImGuiStyle& style = ImGui::GetStyle();
