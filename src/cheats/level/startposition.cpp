@@ -5,9 +5,9 @@
 using namespace geode::prelude;
 
 namespace niorin::cheats::safe {
-    static bool enabled = false;
-    static std::vector<StartPosObject*> spos;
-    static int current = -1;
+    bool enabled = false;
+    std::vector<StartPosObject*> spos;
+    int current = -1;
 
     static void pick(PlayLayer* pl, int index) {
         if (!pl || spos.empty()) return;
@@ -36,24 +36,24 @@ namespace niorin::cheats::safe {
         log::info("startpos switched {}", current);
     }
 
-    static void next() {
+    void next() {
         auto* pl = PlayLayer::get();
         if (!pl || !enabled) return;
         pick(pl, current + 1);
     }
 
-    static void prev() {
+    void prev() {
         auto* pl = PlayLayer::get();
         if (!pl || !enabled) return;
         pick(pl, current - 1);
     }
 
-    static void startpos(bool state) {
+    void startpos(bool state) {
         enabled = state;
         log::info("startpos {}", enabled ? "enabled" : "disabled");
     }
 
-    static bool detect() {
+    bool detect() {
         auto* pl = PlayLayer::get();
         return pl ? pl->m_isTestMode : false;
     }
