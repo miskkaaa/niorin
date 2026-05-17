@@ -213,6 +213,60 @@ $on_mod(Loaded) {
                         }
                     }
                 }
+                ImGui::Separator();
+                if (ImGui::CollapsingHeader("Bypass")) {
+                    for (auto& c : niorin::cheats::all::get()) {
+                        if (c.type != 3) continue;
+                        if (c.thingy == 1) {
+                            if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
+                                if (c.callback) {
+                                    c.callback(c.enabled);
+                                }
+                            }
+                        } else if (c.thingy == 4) {
+                        if (ImGui::InputFloat(c.name.c_str(), &c.value, 0.f, 0.f, "%.4f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+                                if (c.float_cb) {
+                                    c.float_cb(c.value);
+                                }
+                            }
+                        }
+
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::BeginTooltip();
+                            ImGui::Text("%s", c.desc.c_str());
+                            ImGui::Separator();
+                            ImGui::Text("made by %s", c.author.c_str());
+                            ImGui::EndTooltip();
+                        }
+                    }
+                }
+            }
+            ImGui::Separator();
+            if (ImGui::CollapsingHeader("Player")) {
+                for (auto& c : niorin::cheats::all::get()) {
+                        if (c.type != 4) continue;
+                        if (c.thingy == 1) {
+                            if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
+                                if (c.callback) {
+                                    c.callback(c.enabled);
+                                }
+                            }
+                        } else if (c.thingy == 4) {
+                        if (ImGui::InputFloat(c.name.c_str(), &c.value, 0.f, 0.f, "%.4f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+                                if (c.float_cb) {
+                                    c.float_cb(c.value);
+                                }
+                            }
+                        }
+
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::BeginTooltip();
+                            ImGui::Text("%s", c.desc.c_str());
+                            ImGui::Separator();
+                            ImGui::Text("made by %s", c.author.c_str());
+                            ImGui::EndTooltip();
+                        }
+                    }
             }
 
             ImGui::SeparatorText("Theme");
@@ -265,7 +319,7 @@ $on_mod(Loaded) {
                     font_items,
                     IM_ARRAYSIZE(font_items)
                 );
-                
+
                 auto& io = ImGui::GetIO();
 
                 if (selected == 0 && droidf) io.FontDefault = droidf;

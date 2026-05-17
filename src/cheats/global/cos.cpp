@@ -6,7 +6,7 @@ using namespace geode::prelude;
 #include "../../magic/global.hpp"
 #include "../headers/global.hpp"
 
-namespace niorin::cheats::global {
+namespace niorin::cheats::global::cos {
 
     static void coscb(bool value) {
         auto* gm = GameManager::sharedState();

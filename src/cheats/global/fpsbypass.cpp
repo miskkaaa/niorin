@@ -11,7 +11,7 @@ using namespace geode::prelude;
 constexpr float MIN_FPS = 1.f;
 constexpr float MAX_FPS = 96767.f;
 
-namespace niorin::cheats::global {
+namespace niorin::cheats::global::fps {
 
     static float fps = 60.f;
     static bool enabled = false;
@@ -113,7 +113,7 @@ class $modify(niorinfpsgm, GameManager) {
     void setGameVariable(char const* key, bool value) {
         GameManager::setGameVariable(key, value);
         if (strcmp(key, GameVar::UnlockFPS) == 0) {
-            niorin::cheats::global::enabled = value;
+            niorin::cheats::global::fps::enabled = value;
             auto* c = niorin::cheats::all::find("FPS Bypass");
             if (c)
                 c->enabled = value;
@@ -130,7 +130,7 @@ class $modify(niorinfpsgm, GameManager) {
                         AppDelegate::get()->toggleVerticalSync(false);
                     });
                 }
-                niorin::cheats::global::applyfps();
+                niorin::cheats::global::fps::applyfps();
             }
         }
 
@@ -142,7 +142,7 @@ class $modify(niorinfpsgm, GameManager) {
 
             AppDelegate::get()->toggleVerticalSync(value);
             if (value) {
-                niorin::cheats::global::enabled = false;
+                niorin::cheats::global::fps::enabled = false;
 
                 auto* c = niorin::cheats::all::find("FPS Bypass");
                 if (c)

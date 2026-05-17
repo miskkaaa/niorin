@@ -13,6 +13,9 @@ namespace niorin::cheats::all {
         int type = 0;
         // Use 1 when its a Level cheat
         // Use 2 when its a Global cheat
+        // Use 3 when its a Bypass cheat
+        // Use 4 when its a Player cheat
+
         int thingy = 0;
         // use 1 when checkbox, use 2 when textbox, use 3 if float slider idk what else i honestly forgot oh and 4 if you want a float textbox
 
@@ -38,4 +41,6 @@ namespace niorin::cheats::safe::sp {
     void prev();
     void startpos(bool state);
     bool detect();
+} namespace niorin::cheats::global::vsync {
+    extern bool enabled;
 }

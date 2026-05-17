@@ -6,7 +6,7 @@ using namespace geode::prelude;
 #include "../../magic/global.hpp"
 #include "../headers/global.hpp"
 
-namespace niorin::cheats::global {
+namespace niorin::cheats::global::vsync {
     static void vsynccb(bool value) {
         GameManager::sharedState()->setGameVariable(GameVar::VerticalSync, value);
         AppDelegate::get()->toggleVerticalSync(value);

@@ -26,6 +26,12 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES}
         src/cheats/global/fpsbypass.cpp
         src/cheats/global/cbs.cpp
         src/themes/theme/mobile.hpp
+        src/cheats/bypass/characterlimit.cpp
+        src/cheats/bypass/characterlimit.cpp
+        src/cheats/bypass/characterlength.cpp
+        src/cheats/bypass/icon.cpp
+        src/cheats/bypass/icon.cpp
+        src/cheats/player/Noclip.cpp
 )
 
 if (NOT DEFINED ENV{GEODE_SDK})
