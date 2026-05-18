@@ -6,8 +6,12 @@
 
 using namespace geode::prelude;
 
-static ImFont* droidf = nullptr;
-static ImFont* notof = nullptr;
+static ImFont* droidf = nullptr;   // DroidSans.ttf
+static ImFont* notof  = nullptr;   // NotoSans.ttf
+static ImFont* latof  = nullptr;   // Lato.ttf
+static ImFont* latotf = nullptr;   // LatoThin.ttf
+static ImFont* poppinf = nullptr;  // Poppins.ttf
+static ImFont* poppintf = nullptr; // PoppinsThin.ttf
 
 $on_mod(Loaded) {
     niorin::cheats::all::init();
@@ -25,6 +29,14 @@ $on_mod(Loaded) {
                 Mod::get()->getResourcesDir() / "DroidSans.ttf"
             ).string(); const auto noto = (
                 Mod::get()->getResourcesDir() / "NotoSans.ttf"
+            ).string(); const auto lato = (
+                Mod::get()->getResourcesDir() / "Lato.ttf"
+            ).string(); const auto latothin = (
+                Mod::get()->getResourcesDir() / "LatoThin.ttf"
+            ).string(); const auto poppins = (
+                Mod::get()->getResourcesDir() / "Poppins.ttf"
+            ).string(); const auto poppinsthin = (
+                Mod::get()->getResourcesDir() / "PoppinsThin.ttf"
             ).string();
 
             io.Fonts->AddFontDefault();
@@ -36,6 +48,26 @@ $on_mod(Loaded) {
                 io.Fonts->GetGlyphRangesJapanese()
             ); notof = io.Fonts->AddFontFromFileTTF(
                 noto.c_str(),
+                12.f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault()
+            ); latof = io.Fonts->AddFontFromFileTTF(
+                lato.c_str(),
+                12.f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault()
+            ); latotf = io.Fonts->AddFontFromFileTTF(
+                latothin.c_str(),
+                12.f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault()
+            ); poppinf = io.Fonts->AddFontFromFileTTF(
+                poppins.c_str(),
+                12.f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault()
+            ); poppintf = io.Fonts->AddFontFromFileTTF(
+                poppinsthin.c_str(),
                 12.f,
                 nullptr,
                 io.Fonts->GetGlyphRangesDefault()
@@ -240,10 +272,9 @@ $on_mod(Loaded) {
                         }
                     }
                 }
-            }
-            ImGui::Separator();
-            if (ImGui::CollapsingHeader("Player")) {
-                for (auto& c : niorin::cheats::all::get()) {
+                ImGui::Separator();
+                if (ImGui::CollapsingHeader("Player")) {
+                    for (auto& c : niorin::cheats::all::get()) {
                         if (c.type != 4) continue;
                         if (c.thingy == 1) {
                             if (ImGui::Checkbox(c.name.c_str(), &c.enabled)) {
@@ -268,64 +299,72 @@ $on_mod(Loaded) {
                         }
                     }
             }
+                ImGui::SeparatorText("Theme");
+                if (ImGui::CollapsingHeader("Theme")) {
+                    static int style = 0;
+                    static int color = 0;
 
-            ImGui::SeparatorText("Theme");
-            if (ImGui::CollapsingHeader("Theme")) {
-                static int style = 0;
-                static int color = 0;
+                    const char* styles[] = {
+                        "Default",
+                        "Mobile",
+                        "ImGuiClassic"
+                    };
 
-                const char* styles[] = {
-                    "Default",
-                    "Mobile",
-                    "ImGuiClassic"
-                };
+                    const char* colors[] = {
+                        "Default",
+                        "Red",
+                        "Purple"
+                    };
 
-                const char* colors[] = {
-                    "Default",
-                    "Red",
-                    "Purple"
-                };
+                    ImGui::Combo("Style Theme", &style, styles, niorin::theme::tc);
+                    ImGui::Combo("Color Theme", &color, colors, niorin::theme::cc);
+                    const auto t = static_cast<niorin::theme::theme>(style);
+                    const auto c = static_cast<niorin::theme::color_t>(color);
 
-                ImGui::Combo("Style Theme", &style, styles, niorin::theme::tc);
-                ImGui::Combo("Color Theme", &color, colors, niorin::theme::cc);
-                const auto t = static_cast<niorin::theme::theme>(style);
-                const auto c = static_cast<niorin::theme::color_t>(color);
+                    if (style != ls || color != lc) {
+                        niorin::theme::apply(t, c);
 
-                if (style != ls || color != lc) {
-                    niorin::theme::apply(t, c);
+                        ls = style;
+                        lc = color;
+                    }
 
-                    ls = style;
-                    lc = color;
+                    ImGui::SeparatorText("Font Configuration");
+
+                    ImGui::DragFloat(
+                        "Global Font Size",
+                        &size,
+                        0.25f,
+                        5.f,
+                        100.f
+                    );
+
+                    const char* font_items[] = {
+                        "Droid Sans",
+                        "Noto Sans",
+                        "Lato",
+                        "Lato Thin",
+                        "Poppins",
+                        "Poppins Thin"
+                    };
+
+                    ImGui::Combo(
+                        "Font Family",
+                        &selected,
+                        font_items,
+                        IM_ARRAYSIZE(font_items)
+                    );
+
+                    auto& io = ImGui::GetIO();
+
+                    if (selected == 0 && droidf)    io.FontDefault = droidf;
+                    if (selected == 1 && notof)     io.FontDefault = notof;
+                    if (selected == 2 && latof)     io.FontDefault = latof;
+                    if (selected == 3 && latotf)    io.FontDefault = latotf;
+                    if (selected == 4 && poppinf)   io.FontDefault = poppinf;
+                    if (selected == 5 && poppintf)  io.FontDefault = poppintf;
+
+                    io.FontGlobalScale = size / 18.f;
                 }
-
-                ImGui::SeparatorText("Font Configuration");
-
-                ImGui::DragFloat(
-                    "Global Font Size",
-                    &size,
-                    0.25f,
-                    5.f,
-                    100.f
-                );
-
-                const char* font_items[] = {
-                    "Droid Sans",
-                    "Noto Sans"
-                };
-
-                ImGui::Combo(
-                    "Font Family",
-                    &selected,
-                    font_items,
-                    IM_ARRAYSIZE(font_items)
-                );
-
-                auto& io = ImGui::GetIO();
-
-                if (selected == 0 && droidf) io.FontDefault = droidf;
-                if (selected == 1 && notof)  io.FontDefault = notof;
-
-                io.FontGlobalScale = size / 18.f;
             }
             ImGui::End();
             ImGui::ShowDemoWindow();
